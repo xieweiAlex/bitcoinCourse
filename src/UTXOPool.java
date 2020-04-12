@@ -32,8 +32,7 @@ public class UTXOPool {
     /**
      * @return the transaction output corresponding to UTXO {@code utxo}, or null if {@code utxo} is
      *         not in the pool.
-     *  
-     *  /
+     */
     public Transaction.Output getTxOutput(UTXO ut) {
         return H.get(ut);
     }
