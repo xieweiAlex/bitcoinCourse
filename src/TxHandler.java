@@ -10,7 +10,7 @@ public class TxHandler {
      * constructor.
      */
     public TxHandler(UTXOPool utxoPool) {
-        utxoPool = new UTXOPool(utxoPool);
+        this.utxoPool = new UTXOPool(utxoPool);
     }
 
     /**
