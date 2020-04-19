@@ -44,18 +44,16 @@ public class TxHandler {
                 return false;
             }
 
-
-            if (output.value < 0) {
-                return false;
-            }
-
             utxoList.add(utxo);
 
             inputSum += output.value;
         }
 
         for (Transaction.Output output: tx.getOutputs()) {
-           outputSum += output.value;
+            if (output.value < 0) {
+               return false;
+            }
+            outputSum += output.value;
         }
 
         return inputSum >= outputSum;
@@ -72,21 +70,20 @@ public class TxHandler {
         for (Transaction tx: possibleTxs) {
             if (isValidTx(tx)) {
                 validTxs.add(tx);
+
+                for(int i = 0; i < tx.numOutputs(); i++) {
+                    UTXO utxo = new UTXO(tx.getHash(), i);
+                    pool.addUTXO(utxo, tx.getOutput(i));
+                }
+
+                for(int i = 0; i < tx.numInputs(); i++) {
+                    Transaction.Input input = tx.getInput(i);
+                    UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
+                    pool.removeUTXO(utxo);
+                }
             }
 
-            for(int i = 0; i < tx.numOutputs(); i++) {
-                UTXO utxo = new UTXO(tx.getHash(), i);
-                pool.addUTXO(utxo, tx.getOutput(i));
-            }
-
-            for(int i = 0; i < tx.numInputs(); i++) {
-                Transaction.Input input = tx.getInput(i);
-                UTXO utxo = new UTXO(input.prevTxHash, input.outputIndex);
-                pool.removeUTXO(utxo);
-            }
         }
-
-
 
         Transaction[] validTxsArray = new Transaction[validTxs.size()];
         validTxsArray = validTxs.toArray(validTxsArray);
